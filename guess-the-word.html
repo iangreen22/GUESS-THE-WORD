@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div
+            class="h-screen flex flex-col justify-center items-center gap-15 bg-[url('https://mir-s3-cdn-cf.behance.net/project_modules/fs/9bc27292880429.5e569ff84e4d0.gif')] bg-cover bg-center">
+
+            <h1 class="text-5xl font-bold font-mono text-white">Guess-the-word </h1>
+            <div class=" flex flex-col justify-center items-center">
+                <h1 class="text-3xl font-semibold font-mono text-white bg-[url('')]">
+                    {{message}}
+                </h1>
+                <button @click="resetGame()"
+                    class="px-5 py-2 bg-blue-700 hover:bg-blue-400 font-bold text-white rounded-xl">Restart</button>
+            </div>
+            <div>
+                <h1 class="text-7xl text-white text-center shadow-xl shadow-blue-400 font-mono">
+                    {{display.join(" ")}}
+                </h1>
+            </div>
+
+            <div class="flex flex-col items-center gap-2">
+                <div v-for="(row, rowIndex) in keyboard" :key="rowIndex" class="flex gap-2">
+                    <div v-for="letters in row" :key="letters" @click="pressKey(letters)" :class="['h-20 w-20 rounded-md duration-300 font-bold text-lg flex justify-center items-center',
+                        usedLetters.includes(letters)
+                        ? 'bg-black text-white cursor-not-allowed opacity-50'
+                        : 'bg-zinc-200 cursor-pointer hover:bg-zinc-300'
+                        ]">
+
+                        {{ letters }}
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+    <script>
+        Vue.createApp({
+            data() {
+                return {
+                    keyboard: [
+                        ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+                        ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+                        ['Z', 'X', 'C', 'V', 'B', 'N', 'M',],
+                    ],
+                    display: ["_", "_", "_", "_", "_",],
+                    words: ["TIGER", "SPEED", "COLOR", "APPLE", "MELON"],
+                    usedLetters: [],
+                    randomValue: "",
+                    message: "",
+                }
+
+
+            },
+            methods: {
+                randomWords() {
+                    let random = Math.floor(Math.random() * this.words.length);
+                    return this.words[random];
+                },
+                pressKey(letter) {
+                    if (this.usedLetters.includes(letter)) return
+                    this.usedLetters.push(letter);
+                    for (let i = 0; i < this.randomValue.length; i++) {
+                        if (this.randomValue[i] === letter) {
+                            this.display[i] = letter;
+                        }
+                    }
+                    this.isWinner();
+                },
+                isWinner() {
+                    if (this.display.join("") === this.randomValue) {
+                        this.message = 'You Win!'
+                    }
+                },
+                resetGame() {
+                    this.randomValue = this.randomWords()
+                    this.display = ["_", "_", "_", "_", "_",];
+                    this.usedLetters = [];
+                    this.message = '';
+                    console.log(this.randomValue);
+                }
+
+            },
+            mounted() {
+                this.randomValue = this.randomWords();
+
+            }
+
+
+
+        }).mount("#app");
+    </script>
+
+</body>
+
+</html>
